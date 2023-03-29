@@ -1,0 +1,121 @@
+{% include 'header.html' %}
+
+{% include 'navbar.html' %}
+
+<section class="mt-5 mx-5">
+    <table class="table table-striped shadow rounded text-center align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Student ID</th>
+                <th scope="col">Firstname</th>
+                <th scope="col">Lastname</th>
+                <th scope="col">Course</th>
+                <th scope="col">Level</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in student_data %}
+            <tr>
+                <td>{{ student[0] }}</td>
+                <td>{{ student[1] }}</td>
+                <td>{{ student[2] }}</td>
+                <td>{{ student[3] }}</td>
+                <td>{{ student[4] }}</td>
+                <td>
+                    <button class="btn btn-primary" data-bs-toggle='modal' data-bs-target='#editStudentForm' onclick="getCurrentID('{{ student[0] }}')">
+                        <i class="bi bi-pen-fill"></i>
+                    </button>
+                </td>
+                <td>
+                    <form action="{{ url_for('deleteStudent') }}" method="post">
+                        <input type="hidden" value="{{ student[0] }}" name="id">
+                        <button class="btn btn-danger" type="submit"><i class="bi bi-x-circle-fill"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="mt-5 mx-5">
+    <table class="table table-striped shadow rounded text-center align-middle">
+        <thead>
+            <tr>
+                <th scope="col">User ID</th>
+                <th scope="col">Username</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in user_data %}
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td>{{ user[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <div class="modal fade" id="studentForm" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form class="p-5" action="{{ url_for('addStudent') }}" method="post">
+                        <span class="fs-5"><b>Student |</b> Add</span>
+                        <input class="form-control my-3" type="text" name="firstname" placeholder="Firstname" required/>
+                        <input class="form-control" type="text" name="lastname" placeholder="Lastname" required/>
+                        <select class="form-select my-3" name="course">
+                            <option class="dropdown-item" value="BSIT" selected>BSIT</option>
+                            <option class="dropdown-item" value="BSCS">BSCS</option>
+                            <option class="dropdown-item" value="BSAMT">BSAMT</option>
+                            <option class="dropdown-item" value="BSCPE">BSCPE</option>
+                        </select>
+                        <select class="form-select mb-3" name="level">
+                            <option class="dropdown-item" value="1" selected>1</option>
+                            <option class="dropdown-item" value="2">2</option>
+                            <option class="dropdown-item" value="3">3</option>
+                            <option class="dropdown-item" value="4">4</option>
+                        </select>
+                        <button class="btn btn-dark form-control" type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="modal fade" id="editStudentForm" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form class="p-5" action="{{ url_for('updateStudent') }}" method="post">
+                        <span class="fs-5"><b>Student |</b> Edit</span>
+                        <input class="student_id" type="hidden" value="" name="id">
+                        <input class="form-control my-3" type="text" name="firstname" placeholder="Firstname" required/>
+                        <input class="form-control" type="text" name="lastname" placeholder="Lastname" required/>
+                        <select class="form-select my-3" name="course">
+                            <option class="dropdown-item" value="BSIT" selected>BSIT</option>
+                            <option class="dropdown-item" value="BSCS">BSCS</option>
+                            <option class="dropdown-item" value="BSAMT">BSAMT</option>
+                            <option class="dropdown-item" value="BSCPE">BSCPE</option>
+                        </select>
+                        <select class="form-select mb-3" name="level">
+                            <option class="dropdown-item" value="1" selected>1</option>
+                            <option class="dropdown-item" value="2">2</option>
+                            <option class="dropdown-item" value="3">3</option>
+                            <option class="dropdown-item" value="4">4</option>
+                        </select>
+                        <button class="btn btn-dark form-control" type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
