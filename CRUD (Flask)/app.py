@@ -17,7 +17,7 @@ app.config['SECRET_KEY'] = 'oS1BCq0wk@QQFOi7pp0ykCk5R@1nX4^MDPFThthI4Hlo8Ki8Ds'
 def index(): return render_template('index.html')
 
 @app.route('/home')
-def home(): return render_template('home.html', student_data=session.get('student_data'), user_data=session.get('user_data'))
+def home(): return render_template('home.html')
 
 # These are for system functions
 @app.route('/user_auth',methods=['POST'])
@@ -30,9 +30,11 @@ def userAuthentication():
 
     for user in users:
         if username == user[1] and bcrypt.checkpw(password.encode("utf-8"),user[2].encode("utf-8")):
+            if user[1] == "admin":
+                session['student_data'] = list(get("select * from students"))
+                session['user_data'] = list(get("select * from users"))
+            else: session['student_data'] = list(get(f"select * from students where student_id={user[3]}"))
             session['username'] = username
-            session['student_data'] = list(getStudents())
-            session['user_data'] = list(getUsers())
             return redirect(url_for('home'))
     return redirect(url_for("index"))
 
@@ -57,6 +59,11 @@ def addStudent()->None:
         session['student_data'] = list(getStudents())
         return redirect(url_for("home"))
     except: return redirect(url_for("home"))
+
+@app.route('/home/get')
+def get(query:str)->tuple:
+    cursor.execute(query)
+    return cursor.fetchall()
 
 @app.route('/home/students/get')
 def getStudents()->tuple:

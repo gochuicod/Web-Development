@@ -12,11 +12,13 @@
                 <th scope="col">Course</th>
                 <th scope="col">Level</th>
                 <th scope="col">Edit</th>
+                {% if session['username'] == "admin" %}
                 <th scope="col">Delete</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
-            {% for student in student_data %}
+            {% for student in session.get('student_data') %}
             <tr>
                 <td>{{ student[0] }}</td>
                 <td>{{ student[1] }}</td>
@@ -29,10 +31,12 @@
                     </button>
                 </td>
                 <td>
+                    {% if session['username'] == "admin" %}
                     <form action="{{ url_for('deleteStudent') }}" method="post">
                         <input type="hidden" value="{{ student[0] }}" name="id">
                         <button class="btn btn-danger" type="submit"><i class="bi bi-x-circle-fill"></i></button>
                     </form>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -40,6 +44,7 @@
     </table>
 </section>
 
+{% if session['username'] == "admin" %}
 <section class="mt-5 mx-5">
     <table class="table table-striped shadow rounded text-center align-middle">
         <thead>
@@ -49,7 +54,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for user in user_data %}
+            {% for user in session.get('user_data') %}
             <tr>
                 <td>{{ user[0] }}</td>
                 <td>{{ user[1] }}</td>
@@ -58,6 +63,7 @@
         </tbody>
     </table>
 </section>
+{% endif %}
 
 <section>
     <div class="modal fade" id="studentForm" tabindex="-1">
