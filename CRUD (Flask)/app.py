@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, session
-import mysql.connector, bcrypt
+from werkzeug.utils import secure_filename
+import mysql.connector, bcrypt, os
 
 pythondb = mysql.connector.connect(
     host="localhost",
@@ -10,6 +11,8 @@ pythondb = mysql.connector.connect(
 cursor = pythondb.cursor()
 
 app = Flask(__name__)
+app.config['IMAGES_FOLDER'] = 'static/images'
+app.config['ALLOWED_EXTENSIONS'] = {'jpg','jpeg','png'}
 app.config['SECRET_KEY'] = 'oS1BCq0wk@QQFOi7pp0ykCk5R@1nX4^MDPFThthI4Hlo8Ki8Ds'
 
 # These are for template routing
@@ -33,8 +36,11 @@ def userAuthentication():
             if user[1] == "admin":
                 session['student_data'] = list(get("select * from students"))
                 session['user_data'] = list(get("select * from users"))
-            else: session['student_data'] = list(get(f"select * from students where student_id={user[3]}"))
+            else:
+                session['student_data']:list = list(get(f"select * from students where student_id={user[3]}"))
+                session['images']:list = list(get(f"select * from filepaths where student_id={user[3]}"))
             session['username'] = username
+            session['user_id'] = user[3]
             return redirect(url_for('home'))
     return redirect(url_for("index"))
 
@@ -42,6 +48,24 @@ def userAuthentication():
 def logout():
     session.pop('username',None)
     return redirect(url_for('index'))
+
+@app.route('/home/upload',methods=['POST'])
+def uploadImage():
+    file = request.files['image_file']
+    student_id = request.form['id']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['IMAGES_FOLDER'],filename))
+        image_path = os.path.join(app.config['IMAGES_FOLDER'],filename)
+        cursor.execute(f"insert into filepaths (filepath,student_id) values('{filename}','{student_id}')")
+        pythondb.commit()
+        session['images']:list = list(get(f"select * from filepaths where student_id={session.get('user_id')}"))
+    return redirect(url_for("home"))
+
+# These are utility modules
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 # These comprise the CRUD functionality of this system
 @app.route('/home/student/add',methods=['POST'])
@@ -56,23 +80,13 @@ def addStudent()->None:
     )
     try:
         pythondb.commit()
-        session['student_data'] = list(getStudents())
+        session['student_data'] = list(get("select * from students"))
         return redirect(url_for("home"))
     except: return redirect(url_for("home"))
 
 @app.route('/home/get')
 def get(query:str)->tuple:
     cursor.execute(query)
-    return cursor.fetchall()
-
-@app.route('/home/students/get')
-def getStudents()->tuple:
-    cursor.execute("select * from students")
-    return cursor.fetchall()
-
-@app.route('/home/users/get')
-def getUsers()->tuple:
-    cursor.execute("select * from users")
     return cursor.fetchall()
 
 @app.route('/home/student/update',methods=['POST'])
@@ -85,14 +99,14 @@ def updateStudent():
 
     cursor.execute(f"update students set firstname='{firstname.title()}', lastname='{lastname.title()}', course='{course.upper()}', level='{level}' where id={id}")
     pythondb.commit()
-    session['student_data'] = list(getStudents())
+    session['student_data'] = list(get("select * from students"))
     
     return redirect(url_for('home'))
 
 @app.route('/home/student/find',methods=['POST'])
 def findStudent():
     search_box_data = request.form['search']
-    if(search_box_data == "all"): session['student_data'] = list(getStudents())
+    if(search_box_data == "all"): session['student_data'] = list(get("select * from students"))
     else:
         cursor.execute(f"select * from students where firstname='{search_box_data.title()}' or lastname='{search_box_data.title()}'")
         session['student_data'] = list(cursor.fetchall())
@@ -104,7 +118,7 @@ def deleteStudent()->None:
     cursor.execute(f"delete from students where id={id}")
     try:
         pythondb.commit()
-        session['student_data'] = list(getStudents())
+        session['student_data'] = list(get("select * from students"))
         return redirect(url_for("home"))
     except: return redirect(url_for("home"))
 
