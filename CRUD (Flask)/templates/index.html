@@ -1,11 +1,27 @@
-{% extends 'login.html' %}
+{% include 'header.html' %}
 
-{% block title %}Login{% endblock %}
+    <section class="d-flex flex-row justify-content-center">
+        <form class="mt-5 p-5 shadow rounded rounded-4" action="{{ url_for('userAuthentication') }}" method="post">
+            <div class="form-group">
+                <label class="fw-bold form-label" for="username">Username</label>
+                <input id="username" class="form-control" type="text" name="username" placeholder="Username" required/>
+            </div>
+            <div class="form-group my-3">
+                <label class="fw-bold form-label" for="password">Password</label>
+                <input id="password" class="form-control" type="password" name="password" placeholder="Password" required/>
+            </div>
+            <button class="btn btn-primary form-control" type="submit">Log In</button>
+            <button
+                class="btn btn-success form-control my-3"
+                type="button"
+                onclick="redirect(`{{ url_for('register') }}`)"
+            >
+                Create an account
+            </button>   
+        </form>
+    </section>
+    <script>
+        const redirect = url => window.location.href = url
+    </script>
 
-{% block content %}
-    <form class="mt-5 p-5 shadow rounded rounded-4" action="{{ url_for('userAuthentication') }}" method="post">
-        <input class="form-control" type="text" name="username" placeholder="Username" required/>
-        <input class="form-control my-3" type="password" name="password" placeholder="Password" required/>
-        <button class="btn btn-primary form-control mt-2" type="submit">Log In</button>
-    </form>
-{% endblock %}
+{% include 'footer.html' %}

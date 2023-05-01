@@ -1,8 +1,6 @@
-{% include 'header.html' %}
-
-<nav class="navbar shadow">
+<nav class="navbar">
   <div class="container-fluid">
-    <a class="navbar-brand">Student Management</a>
+    <a class="navbar-brand fw-bold">Student Management</a>
     <div class="d-flex">
       {% if session['username'] == "admin" %}
       <div class="d-flex">
@@ -12,11 +10,14 @@
         </form>
       </div>
       <div class="d-flex mx-3">
-        <button class="btn btn-dark" data-bs-toggle='modal' data-bs-target='#studentForm'>Add Student</button>
+        <button class="btn btn-dark" data-bs-toggle='modal' data-bs-target='.studentForm'>Add Student</button>
       </div>
       {% else %}
+      <div class="d-flex">
+        <button class="cameraBtn btn btn-secondary" data-bs-toggle="modal" data-bs-target=".cameraModal"><i class="bi bi-camera-fill"></i></button>
+      </div>
       <div class="d-flex mx-3">
-        <button class="btn btn-dark" data-bs-toggle='modal' data-bs-target='#uploadForm' onclick="getStudentID('{{student_id}}')">Upload</button>
+        <button class="btn btn-dark" data-bs-toggle='modal' data-bs-target='.uploadForm' onclick="getStudentID('{{student_id}}')">Upload</button>
       </div>
       {% endif %}
       <div class="d-flex">
@@ -27,5 +28,3 @@
     </div>
   </div>
 </nav>
-
-{% include 'footer.html' %}

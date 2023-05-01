@@ -18,7 +18,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for student in session.get('student_data') %}
+            {% for student in session.get('student_data')[0] %}
             <tr>
                 <td>{{ student[0] }}</td>
                 <td>{{ student[1] }}</td>
@@ -26,7 +26,7 @@
                 <td>{{ student[3] }}</td>
                 <td>{{ student[4] }}</td>
                 <td>
-                    <button class="btn btn-primary" data-bs-toggle='modal' data-bs-target='#editStudentForm' onclick="getCurrentStudent(['{{student[0]}}','{{student[1]}}','{{student[2]}}'])">
+                    <button class="btn btn-primary" data-bs-toggle='modal' data-bs-target='.editStudentForm' onclick="getCurrentStudent(['{{student[0]}}','{{student[1]}}','{{student[2]}}'])">
                         <i class="bi bi-pen-fill"></i>
                     </button>
                 </td>
@@ -44,7 +44,7 @@
     </table>
 </section>
 
-{% if session['username'] != "admin" %}
+{% if session.get('username') != "admin" and session.get('images') is not none %}
 <section class="mt-5 mx-5">
     <div class="row g-3 text-center">
         {% for image in session.get('images') %}
@@ -78,21 +78,22 @@
 {% endif %}
 
 <section>
-    <div class="modal fade" id="studentForm" tabindex="-1">
+    <div class="modal fade studentForm" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
                     <form class="p-5" action="{{ url_for('addStudent') }}" method="post">
                         <span class="fs-5"><b>Student |</b> Add</span>
-                        <input class="form-control my-3" type="text" name="firstname" placeholder="Firstname" required/>
-                        <input class="form-control" type="text" name="lastname" placeholder="Lastname" required/>
-                        <select class="form-select my-3" name="course">
+                        <input class="form-control my-3" type="text" name="student_id" placeholder="Student ID" required/>
+                        <input class="form-control" type="text" name="firstname" placeholder="Firstname" required/>
+                        <input class="form-control my-3" type="text" name="lastname" placeholder="Lastname" required/>
+                        <select class="form-select" name="course">
                             <option class="dropdown-item" value="BSIT" selected>BSIT</option>
                             <option class="dropdown-item" value="BSCS">BSCS</option>
                             <option class="dropdown-item" value="BSAMT">BSAMT</option>
                             <option class="dropdown-item" value="BSCPE">BSCPE</option>
                         </select>
-                        <select class="form-select mb-3" name="level">
+                        <select class="form-select my-3" name="level">
                             <option class="dropdown-item" value="1" selected>1</option>
                             <option class="dropdown-item" value="2">2</option>
                             <option class="dropdown-item" value="3">3</option>
@@ -107,13 +108,14 @@
 </section>
 
 <section>
-    <div class="modal fade" id="editStudentForm" tabindex="-1">
+    <div class="modal fade editStudentForm" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
                     <form class="p-5" action="{{ url_for('updateStudent') }}" method="post">
                         <span class="student_fullname fs-5"></span>
                         <input class="student_id" type="hidden" value="" name="id">
+                        <label>Firstname</label>
                         <input class="form-control my-3" type="text" name="firstname" placeholder="Firstname" required/>
                         <input class="form-control" type="text" name="lastname" placeholder="Lastname" required/>
                         <select class="form-select my-3" name="course">
@@ -137,12 +139,12 @@
 </section>
 
 <section>
-    <div class="modal fade" id="uploadForm" tabindex="-1">
+    <div class="modal fade uploadForm" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
                     <form class="p-5" action="{{ url_for('uploadImage') }}" method="post" enctype="multipart/form-data">
-                        <input class="student_id_upload" type="hidden" value="{{session['student_data'][0][0]}}" name="id">
+                        <input class="student_id_upload" type="hidden" value="{{session['student_data'][0][0][0]}}" name="id">
                         <input class="form-control mb-3" type="file" name="image_file">
                         <button class="btn btn-dark form-control" type="submit">Upload</button>
                     </form>
