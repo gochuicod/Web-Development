@@ -3,7 +3,7 @@
 {% include 'navbar.html' %}
 
 <section class="mt-5 mx-5">
-    <table class="table table-striped shadow rounded text-center align-middle">
+    <table class="table table-striped shadow rounded text-center align-middle expand">
         <thead>
             <tr>
                 <th scope="col">Student ID</th>
@@ -49,16 +49,16 @@
     <div class="row g-3 text-center">
         {% for image in session.get('images') %}
         <div class="col">
-            <img class="rounded shadow" width="200" height="200" src="../static/images/{{image[1]}}" alt="">
+            <img class="rounded shadow zoom-in" width="200" height="200" src="../static/images/{{ image[1] }}">
         </div>
         {% endfor %}
     </div>
 </section>
 {% endif %}
 
-{% if session['username'] == "admin" %}
+{% if session.get('username') == "admin" %}
 <section class="mt-5 mx-5">
-    <table class="table table-striped shadow rounded text-center align-middle">
+    <table class="table table-striped shadow rounded text-center align-middle expand">
         <thead>
             <tr>
                 <th scope="col">User ID</th>
@@ -66,7 +66,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for user in session.get('user_data') %}
+            {% for user in session.get('student_data')[1] %}
             <tr>
                 <td>{{ user[0] }}</td>
                 <td>{{ user[1] }}</td>
@@ -147,6 +147,38 @@
                         <input class="student_id_upload" type="hidden" value="{{session['student_data'][0][0][0]}}" name="id">
                         <input class="form-control mb-3" type="file" name="image_file">
                         <button class="btn btn-dark form-control" type="submit">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="modal fade cameraModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="d-flex flex-row justify-content-center my-4">
+                        <video class="video rounded"></video>
+                    </div>
+                    <div class="d-flex flex-row justify-content-center">
+                        <button class="captureBtn btn btn-dark">
+                            <i class="bi bi-camera-fill"></i>
+                        </button>
+                        <button class="videoBtn btn btn-dark mx-4">
+                            <i class="bi bi-camera-video-off-fill"></i>
+                        </button>
+                        <button class="resetBtn btn btn-dark">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                        <button class="uploadBtn btn btn-primary ms-4">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                        </button>
+                    </div>
+                    <form class="uploadWebcamImageForm" method="post" action="{{ url_for('uploadWebcamImage') }}">
+                        <input class="image_data" type="hidden" name="image_data" value="">
+                        <input class="filename" type="hidden" name="filename" value="">
                     </form>
                 </div>
             </div>

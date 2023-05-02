@@ -27,7 +27,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session
 from controllers.userController import authenticate, getAllUsers, setUser
 from controllers.studentController import add, getAll, delete, find, update, get
-from controllers.fileController import getUserFiles, addNewFile
+from controllers.fileController import getUserFiles, addNewFile, addWebcamImage
 
 #--------------------------------------------------------------------------------
 # INITIALIZATIONS
@@ -117,6 +117,7 @@ def userAuthentication():
 
     session['student_data'] = authenticate(username,password)
     if session.get('student_data') != False:
+        session['images'] = session.get('student_data')[1]
         session['username'] = username
         session['user_id'] = session.get('student_data')[0][0][0]
         return redirect(url_for('home'))
@@ -157,6 +158,24 @@ def uploadImage():
     student_id = request.form['id']
 
     addNewFile(file,student_id)
+
+    session['images'] = list(getUserFiles(session.get('user_id')))
+
+    return redirect(url_for("home"))
+
+#--------------------------------------------------------------------------------
+# Method Name: uploadWebcamImage
+# Description: uploads a webcam image
+# Arguments  : none
+# Return     : redirect
+#--------------------------------------------------------------------------------
+@app.route('/home/webcam/upload',methods=['POST'])
+def uploadWebcamImage():
+    image_data = request.form['image_data']
+    filename = request.form['filename']
+    student_id = session.get('user_id')
+
+    addWebcamImage(image_data,filename,student_id)
 
     session['images'] = list(getUserFiles(session.get('user_id')))
 
